@@ -1,10 +1,3 @@
-/*
- todo:
- - euler angles from rotation quaternion
- - rotation matrix from rotation quaternion
- - n-vec from left/right eye orientation
-*/
-
 #pragma once
 
 #include "ofMain.h"
@@ -30,6 +23,8 @@ public:
 	bool getFound() const;
 	
 	ofQuaternion getRotation() const;
+	ofVec3f getRotationEuler() const;
+	ofMatrix4x4 getRotationMatrix() const;
 	ofVec3f getPosition() const; // millimeters by default, specify in fsstudio
 	ofVec2f getLeftEye() const;
 	ofVec2f getRightEye() const;

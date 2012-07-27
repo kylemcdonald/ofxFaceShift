@@ -39,7 +39,7 @@ bool ofxFaceShift::update() {
 	int messageLength = udpConnection.Receive(message, maxPacketSize);
 	if(messageLength > 0) {
 		newFrame = true;
-	
+		
 		stringstream data;
 		data.write(message, messageLength);
 		
@@ -153,6 +153,16 @@ bool ofxFaceShift::getFound() const {
 
 ofQuaternion ofxFaceShift::getRotation() const {
 	return rotation;
+}
+
+ofVec3f ofxFaceShift::getRotationEuler() const {
+	return rotation.getEuler();
+}
+
+ofMatrix4x4 ofxFaceShift::getRotationMatrix() const {
+	ofMatrix4x4 mat;
+	rotation.get(mat);
+	return mat;
 }
 
 ofVec3f ofxFaceShift::getPosition() const {

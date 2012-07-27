@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxNetwork.h"
 #include "ofxFaceShift.h"
 
 class ofApp : public ofBaseApp{
