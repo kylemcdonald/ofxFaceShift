@@ -39,8 +39,6 @@ bool ofxFaceShift::update() {
 	int messageLength = udpConnection.Receive(message, maxPacketSize);
 	if(messageLength > 0) {
 		newFrame = true;
-		markers.clear();
-		expressionWeights.clear();
 	
 		stringstream data;
 		data.write(message, messageLength);
@@ -64,18 +62,19 @@ bool ofxFaceShift::update() {
 			switch(blockID) {
 				case FS_FRAME_INFO_BLOCK:
 					readRaw(data, timestamp);
-					readRaw(data, success);
+					readRaw(data, found);
 					break;
 				case FS_POSE_BLOCK:
 					readRaw(data, rotation.x());
 					readRaw(data, rotation.y());
 					readRaw(data, rotation.z());
 					readRaw(data, rotation.w());
-					readRaw(data, translation.x);
-					readRaw(data, translation.y);
-					readRaw(data, translation.z);
+					readRaw(data, position.x);
+					readRaw(data, position.y);
+					readRaw(data, position.z);
 					break;
 				case FS_BLENDSHAPES_BLOCK:
+					expressionWeights.clear();
 					unsigned int expressionCount;
 					readRaw(data, expressionCount);
 					for(int i = 0; i < expressionCount; i++) {
@@ -91,6 +90,7 @@ bool ofxFaceShift::update() {
 					readRaw(data, rightEye.y);
 					break;
 				case FS_MARKERS_BLOCK:
+					markers.clear();
 					unsigned short markerCount;
 					readRaw(data, markerCount);
 					for(int i = 0; i < markerCount; i++) {
@@ -115,14 +115,54 @@ float ofxFaceShift::getExpressionWeight(unsigned int i) const {
 	return expressionWeights.at(i);
 }
 
-string ofxFaceShift::getExpressionName(unsigned int i) const {
-	return expressionNames.at(i);
-}
-
 const vector<float>& ofxFaceShift::getExpressionWeights() const {
 	return expressionWeights;
 }
 
+string ofxFaceShift::getExpressionName(unsigned int i) const {
+	return expressionNames.at(i);
+}
+
 const vector<string>& ofxFaceShift::getExpressionNames() const {
 	return expressionNames;
+}
+
+unsigned int ofxFaceShift::getMarkerCount() const {
+	return markers.size();
+}
+
+ofVec3f ofxFaceShift::getMarker(unsigned int i) const {
+	return markers.at(i);
+}
+
+const vector<ofVec3f>& ofxFaceShift::getMarkers() const {
+	return markers;
+}
+
+unsigned short ofxFaceShift::getVersionNumber() const {
+	return versionNumber;
+}
+
+double ofxFaceShift::getTimestamp() const {
+	return timestamp;
+}
+
+bool ofxFaceShift::getFound() const {
+	return found;
+}
+
+ofQuaternion ofxFaceShift::getRotation() const {
+	return rotation;
+}
+
+ofVec3f ofxFaceShift::getPosition() const {
+	return position;
+}
+
+ofVec2f ofxFaceShift::getLeftEye() const {
+	return leftEye;
+}
+
+ofVec2f ofxFaceShift::getRightEye() const {
+	return rightEye;
 }
