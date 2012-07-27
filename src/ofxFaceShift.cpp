@@ -1,5 +1,6 @@
 #include "ofxFaceShift.h"
 
+const unsigned short referenceVersionNumber = 1;
 const unsigned int maxPacketSize = 1024;
 
 enum {
@@ -9,6 +10,14 @@ enum {
 	FS_EYES_BLOCK = 104,
 	FS_MARKERS_BLOCK = 105
 };
+
+void checkVersion(unsigned short versionNumber) {
+	static bool versionChecked = false;
+	if(!versionChecked && versionNumber != referenceVersionNumber) {
+		ofLog() << "FaceShift Studio binary protocol is version " << versionNumber << " but ofxFaceShift uses version " << referenceVersionNumber << ". There may be an incompatibility." << endl;
+	}
+	versionChecked = true;
+}
 
 template <class T>
 void readRaw(stringstream& stream, T& data) {
@@ -23,6 +32,7 @@ void ofxFaceShift::setup(unsigned int port) {
 	expressionNames = ofSplitString(ofBufferFromFile("blendshapes.txt"), "\n");
 }
 
+// written against http://www.faceshift.com/help/studio/beta/#faceshiftstudiobeta-faceshiftOpenFormat
 bool ofxFaceShift::update() {
 	bool newFrame = false;
 	static char message[maxPacketSize];
@@ -42,6 +52,7 @@ bool ofxFaceShift::update() {
 		readRaw(data, versionNumber);
 		readRaw(data, blockSize);
 		
+		checkVersion(versionNumber);
 		unsigned short numberBlocks;
 		readRaw(data, numberBlocks);
 		
