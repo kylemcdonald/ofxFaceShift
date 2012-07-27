@@ -1,14 +1,12 @@
-#include "testApp.h"
+#include "ofxFaceShift.h"
 
-void testApp::setup(){
-	ofSetVerticalSync(true);
-	
-	udpConnection.Create();
-	udpConnection.Bind(33433);
-	udpConnection.SetNonBlocking(true);
-	
-	blendshapeNames = ofSplitString(ofBufferFromFile("blendshapes.txt"), "\n");
-}
+enum {
+	FS_FRAME_INFO_BLOCK = 101,
+	FS_POSE_BLOCK = 102,
+	FS_BLENDSHAPES_BLOCK = 103,
+	FS_EYES_BLOCK = 104,
+	FS_MARKERS_BLOCK = 105
+};
 
 template <class T>
 void readRaw(stringstream& stream, T& data, int n) {
@@ -20,15 +18,15 @@ void readRaw(stringstream& stream, T& data) {
 	readRaw(stream, data, sizeof(T));
 }
 
-enum {
-	FS_FRAME_INFO_BLOCK = 101,
-	FS_POSE_BLOCK = 102,
-	FS_BLENDSHAPES_BLOCK = 103,
-	FS_EYES_BLOCK = 104,
-	FS_MARKERS_BLOCK = 105
-};
+void ofxFaceShift::setup(unsigned int port) {	
+	udpConnection.Create();
+	udpConnection.Bind(port);
+	udpConnection.SetNonBlocking(true);
+	
+	expressionNames = ofSplitString(ofBufferFromFile("blendshapes.txt"), "\n");
+}
 
-void testApp::update(){
+void ofxFaceShift::update() {
 	const unsigned int maxSize = 1024;
 	char message[maxSize];
 	int n = udpConnection.Receive(message, maxSize);
@@ -51,7 +49,7 @@ void testApp::update(){
 		bool success;
 		float prx, pry, prz, prw;
 		float ptx, pty, ptz;
-		blendshapeCoeffs.clear();
+		expressionWeights.clear();
 		float leftEyeTheta, leftEyePhi, rightEyeTheta, rightEyePhi;
 		vector<ofVec3f> markers;
 		
@@ -82,7 +80,7 @@ void testApp::update(){
 					for(int i = 0; i < ncoeffs; i++) {
 						float cur;
 						readRaw(data, cur);
-						blendshapeCoeffs.push_back(cur);
+						expressionWeights.push_back(cur);
 					}
 					break;
 				case FS_EYES_BLOCK:
@@ -104,54 +102,36 @@ void testApp::update(){
 					break;
 			}
 		}
-		cout << timestamp << " " << success << " " << ptx << " " << pty << " " << ptz << endl;
-		cout << prx << " " << pry << " " << prz << " " << prw << endl;
-		cout << ofToString(blendshapeCoeffs) << endl;
 	}
 }
 
-void testApp::draw(){
+void ofxFaceShift::draw(){
 	ofBackground(0);
 	ofColor(255);
 	ofNoFill();
-	for(int i = 0; i < blendshapeCoeffs.size(); i++) {
-		ofRect(0, 0, blendshapeCoeffs[i] * 100, 10);
-		ofDrawBitmapString(blendshapeNames[i], blendshapeCoeffs[i] * 100, 10);
+	for(int i = 0; i < expressionWeights.size(); i++) {
+		ofRect(0, 0, expressionWeights[i] * 100, 10);
+		ofDrawBitmapString(expressionNames[i], expressionWeights[i] * 100, 10);
 		ofTranslate(0, 10);
 	}
 }
 
-void testApp::keyPressed(int key){
-	
+unsigned int ofxFaceShift::getExpressionCount() const {
+	return expressionWeights.size();
 }
 
-void testApp::keyReleased(int key){
-	
+float ofxFaceShift::getExpressionWeight(unsigned int i) const {
+	return expressionWeights.at(i);
 }
 
-void testApp::mouseMoved(int x, int y ){
+string ofxFaceShift::getExpressionName(unsigned int i) const {
+	return expressionNames.at(i);
 }
 
-void testApp::mouseDragged(int x, int y, int button){
-	
+const vector<float>& ofxFaceShift::getExpressionWeights() const {
+	return expressionWeights;
 }
 
-void testApp::mousePressed(int x, int y, int button){
-	
-}
-
-void testApp::mouseReleased(int x, int y, int button){
-	
-}
-
-void testApp::windowResized(int w, int h){
-	
-}
-
-void testApp::gotMessage(ofMessage msg){
-	
-}
-
-void testApp::dragEvent(ofDragInfo dragInfo){ 
-	
+const vector<string>& ofxFaceShift::getExpressionNames() const {
+	return expressionNames;
 }
