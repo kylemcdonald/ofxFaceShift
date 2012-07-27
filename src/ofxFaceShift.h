@@ -6,8 +6,7 @@
 class ofxFaceShift {
 public:
 	void setup(unsigned int port = 33433);
-	void update();
-	void draw();
+	bool update();
 	
 	unsigned int getExpressionCount() const;
 	float getExpressionWeight(unsigned int i) const;
@@ -18,6 +17,16 @@ public:
 	
 protected:
 	ofxUDPManager udpConnection;
+	
+	unsigned short versionNumber;
+	double timestamp;
+	bool success;
+	
+	ofQuaternion rotation;
+	ofVec3f translation;
+	ofVec2f leftEye, rightEye;
+	
+	vector<ofVec3f> markers;
 	vector<float> expressionWeights;
 	vector<string> expressionNames;
 };

@@ -1,5 +1,7 @@
 #include "ofxFaceShift.h"
 
+const unsigned int maxPacketSize = 1024;
+
 enum {
 	FS_FRAME_INFO_BLOCK = 101,
 	FS_POSE_BLOCK = 102,
@@ -9,13 +11,8 @@ enum {
 };
 
 template <class T>
-void readRaw(stringstream& stream, T& data, int n) {
-	stream.read((char*) &data, n);
-}
-
-template <class T>
 void readRaw(stringstream& stream, T& data) {
-	readRaw(stream, data, sizeof(T));
+	stream.read((char*) &data, sizeof(T));
 }
 
 void ofxFaceShift::setup(unsigned int port) {	
@@ -26,38 +23,32 @@ void ofxFaceShift::setup(unsigned int port) {
 	expressionNames = ofSplitString(ofBufferFromFile("blendshapes.txt"), "\n");
 }
 
-void ofxFaceShift::update() {
-	const unsigned int maxSize = 1024;
-	char message[maxSize];
-	int n = udpConnection.Receive(message, maxSize);
-	if(n > 0) {
+bool ofxFaceShift::update() {
+	bool newFrame = false;
+	static char message[maxPacketSize];
+	int messageLength = udpConnection.Receive(message, maxPacketSize);
+	if(messageLength > 0) {
+		newFrame = true;
+		markers.clear();
+		expressionWeights.clear();
+	
 		stringstream data;
-		data.write(message, n);
+		data.write(message, messageLength);
 		
-		unsigned short blockID, versionNumber;
+		unsigned short blockID;
 		unsigned int blockSize;
 		
-		// data container
-		unsigned short numberBlocks;
 		readRaw(data, blockID);
 		readRaw(data, versionNumber);
 		readRaw(data, blockSize);
-		readRaw(data, numberBlocks);
-		cout << "data container " << blockID << "/" << versionNumber << "/" << blockSize << "/" << numberBlocks << endl;
 		
-		double timestamp;
-		bool success;
-		float prx, pry, prz, prw;
-		float ptx, pty, ptz;
-		expressionWeights.clear();
-		float leftEyeTheta, leftEyePhi, rightEyeTheta, rightEyePhi;
-		vector<ofVec3f> markers;
+		unsigned short numberBlocks;
+		readRaw(data, numberBlocks);
 		
 		for(int i = 0; i < numberBlocks; i++) {
 			readRaw(data, blockID);
 			readRaw(data, versionNumber);
 			readRaw(data, blockSize);
-			cout << "block " << i << ": " << blockID << "/" << versionNumber << "/" << blockSize << endl;
 			
 			switch(blockID) {
 				case FS_FRAME_INFO_BLOCK:
@@ -65,55 +56,44 @@ void ofxFaceShift::update() {
 					readRaw(data, success);
 					break;
 				case FS_POSE_BLOCK:
-					// not sure if it's xyzw or wxyz
-					readRaw(data, prx);
-					readRaw(data, pry);
-					readRaw(data, prz);
-					readRaw(data, prw);
-					readRaw(data, ptx);
-					readRaw(data, pty);
-					readRaw(data, ptz);
+					readRaw(data, rotation.x());
+					readRaw(data, rotation.y());
+					readRaw(data, rotation.z());
+					readRaw(data, rotation.w());
+					readRaw(data, translation.x);
+					readRaw(data, translation.y);
+					readRaw(data, translation.z);
 					break;
 				case FS_BLENDSHAPES_BLOCK:
-					unsigned int ncoeffs;
-					readRaw(data, ncoeffs);
-					for(int i = 0; i < ncoeffs; i++) {
-						float cur;
-						readRaw(data, cur);
-						expressionWeights.push_back(cur);
+					unsigned int expressionCount;
+					readRaw(data, expressionCount);
+					for(int i = 0; i < expressionCount; i++) {
+						float expressionWeight;
+						readRaw(data, expressionWeight);
+						expressionWeights.push_back(expressionWeight);
 					}
 					break;
 				case FS_EYES_BLOCK:
-					readRaw(data, leftEyeTheta);
-					readRaw(data, leftEyePhi);
-					readRaw(data, rightEyeTheta);
-					readRaw(data, rightEyePhi);
+					readRaw(data, leftEye.x);
+					readRaw(data, leftEye.y);
+					readRaw(data, rightEye.x);
+					readRaw(data, rightEye.y);
 					break;
 				case FS_MARKERS_BLOCK:
-					unsigned short nmarkers;
-					readRaw(data, nmarkers);
-					for(int i = 0; i < nmarkers; i++) {
-						ofVec3f cur;
-						readRaw(data, cur.x);
-						readRaw(data, cur.y);
-						readRaw(data, cur.z);
-						markers.push_back(cur);
+					unsigned short markerCount;
+					readRaw(data, markerCount);
+					for(int i = 0; i < markerCount; i++) {
+						ofVec3f marker;
+						readRaw(data, marker.x);
+						readRaw(data, marker.y);
+						readRaw(data, marker.z);
+						markers.push_back(marker);
 					}
 					break;
 			}
 		}
 	}
-}
-
-void ofxFaceShift::draw(){
-	ofBackground(0);
-	ofColor(255);
-	ofNoFill();
-	for(int i = 0; i < expressionWeights.size(); i++) {
-		ofRect(0, 0, expressionWeights[i] * 100, 10);
-		ofDrawBitmapString(expressionNames[i], expressionWeights[i] * 100, 10);
-		ofTranslate(0, 10);
-	}
+	return newFrame;
 }
 
 unsigned int ofxFaceShift::getExpressionCount() const {
