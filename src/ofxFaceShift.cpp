@@ -14,7 +14,7 @@ enum {
 void checkVersion(unsigned short versionNumber) {
 	static bool versionChecked = false;
 	if(!versionChecked && versionNumber != referenceVersionNumber) {
-		ofLog() << "FaceShift Studio binary protocol is version " << versionNumber << " but ofxFaceShift uses version " << referenceVersionNumber << ". There may be an incompatibility." << endl;
+		ofLogWarning() << "FaceShift Studio binary protocol is version " << versionNumber << " but ofxFaceShift uses version " << referenceVersionNumber << ". There may be an incompatibility." << endl;
 	}
 	versionChecked = true;
 }
