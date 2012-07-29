@@ -10,5 +10,6 @@ public:
 	void draw();
 	
 	ofxFaceShift faceShift;
+	ofEasyCam cam;
 };
 

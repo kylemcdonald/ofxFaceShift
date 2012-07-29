@@ -29,7 +29,7 @@ void ofxFaceShift::setup(unsigned int port) {
 	udpConnection.Bind(port);
 	udpConnection.SetNonBlocking(true);
 	
-	expressionNames = ofSplitString(ofBufferFromFile("blendshapes.txt"), "\n");
+	blendshapeNames = ofSplitString(ofBufferFromFile("blendshapes.txt"), "\n");
 }
 
 // written against http://www.faceshift.com/help/studio/beta/#faceshiftstudiobeta-faceshiftOpenFormat
@@ -74,13 +74,13 @@ bool ofxFaceShift::update() {
 					readRaw(data, position.z);
 					break;
 				case FS_BLENDSHAPES_BLOCK:
-					expressionWeights.clear();
-					unsigned int expressionCount;
-					readRaw(data, expressionCount);
-					for(int i = 0; i < expressionCount; i++) {
-						float expressionWeight;
-						readRaw(data, expressionWeight);
-						expressionWeights.push_back(expressionWeight);
+					blendshapeWeights.clear();
+					unsigned int blendshapeCount;
+					readRaw(data, blendshapeCount);
+					for(int i = 0; i < blendshapeCount; i++) {
+						float blendshapeWeight;
+						readRaw(data, blendshapeWeight);
+						blendshapeWeights.push_back(blendshapeWeight);
 					}
 					break;
 				case FS_EYES_BLOCK:
@@ -107,24 +107,24 @@ bool ofxFaceShift::update() {
 	return newFrame;
 }
 
-unsigned int ofxFaceShift::getExpressionCount() const {
-	return expressionWeights.size();
+unsigned int ofxFaceShift::getBlendshapeCount() const {
+	return blendshapeWeights.size();
 }
 
-float ofxFaceShift::getExpressionWeight(unsigned int i) const {
-	return expressionWeights.at(i);
+float ofxFaceShift::getBlendshapeWeight(unsigned int i) const {
+	return blendshapeWeights.at(i);
 }
 
-const vector<float>& ofxFaceShift::getExpressionWeights() const {
-	return expressionWeights;
+const vector<float>& ofxFaceShift::getBlendshapeWeights() const {
+	return blendshapeWeights;
 }
 
-string ofxFaceShift::getExpressionName(unsigned int i) const {
-	return expressionNames.at(i);
+string ofxFaceShift::getBlendshapeName(unsigned int i) const {
+	return blendshapeNames.at(i);
 }
 
-const vector<string>& ofxFaceShift::getExpressionNames() const {
-	return expressionNames;
+const vector<string>& ofxFaceShift::getBlendshapeNames() const {
+	return blendshapeNames;
 }
 
 unsigned int ofxFaceShift::getMarkerCount() const {

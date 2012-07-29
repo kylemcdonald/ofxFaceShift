@@ -8,11 +8,11 @@ public:
 	void setup(unsigned int port = 33433);
 	bool update();
 	
-	unsigned int getExpressionCount() const;
-	float getExpressionWeight(unsigned int i) const;
-	const vector<float>& getExpressionWeights() const;
-	string getExpressionName(unsigned int i) const;
-	const vector<string>& getExpressionNames() const;
+	unsigned int getBlendshapeCount() const;
+	float getBlendshapeWeight(unsigned int i) const;
+	const vector<float>& getBlendshapeWeights() const;
+	string getBlendshapeName(unsigned int i) const;
+	const vector<string>& getBlendshapeNames() const;
 	
 	unsigned int getMarkerCount() const;
 	ofVec3f getMarker(unsigned int i) const;
@@ -41,7 +41,7 @@ protected:
 	ofVec2f leftEye, rightEye;
 	
 	vector<ofVec3f> markers;
-	vector<float> expressionWeights;
-	vector<string> expressionNames;
+	vector<float> blendshapeWeights;
+	vector<string> blendshapeNames;
 };
 
