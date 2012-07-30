@@ -1,0 +1,10 @@
+<!-- osc output settings -->
+<osc>
+  <host>localhost</host>
+  <port>8338</port>
+</osc>
+
+<!-- faceShift udp listen settings -->
+<faceShift>
+	<port>33433</port>
+</faceShift>
