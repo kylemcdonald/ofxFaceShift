@@ -8,6 +8,7 @@ public:
 	ofxFaceShift();
 
 	void setup(unsigned int port = 33433);
+	void import(string modelFolder);
 	bool update();
 	
 	unsigned int getBlendshapeCount() const;
@@ -28,8 +29,13 @@ public:
 	ofVec3f getRotationEuler() const;
 	ofMatrix4x4 getRotationMatrix() const;
 	ofVec3f getPosition() const; // millimeters by default, specify in fsstudio
-	ofVec2f getLeftEye() const;
-	ofVec2f getRightEye() const;
+	ofVec2f getLeftEyeRotation() const;
+	ofVec2f getRightEyeRotation() const;
+	ofVec3f getLeftEyeOffset() const;
+	ofVec3f getRightEyeOffset() const;
+	
+	ofMesh& getBlendMesh();
+	ofMesh& getBlendshapeMesh(unsigned int i);
 	
 protected:
 	ofxUDPManager udpConnection;
@@ -40,10 +46,16 @@ protected:
 	
 	ofQuaternion rotation;
 	ofVec3f position;
-	ofVec2f leftEye, rightEye;
+	ofVec2f leftEyeRotation, rightEyeRotation;
 	
 	vector<ofVec3f> markers;
 	vector<float> blendshapeWeights;
 	vector<string> blendshapeNames;
+	
+	bool imported, blendNeedsUpdating;
+	ofMesh neutralMesh, blendMesh;
+	vector<ofMesh> blendshapeMeshes;
+	ofVec3f leftEyeOffset, rightEyeOffset;
+	vector<vector<unsigned int> > validBlendPoints;
 };
 
