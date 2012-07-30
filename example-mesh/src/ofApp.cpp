@@ -157,8 +157,6 @@ void ofApp::setup() {
 		}
 	}
 	
-	//cam.setupPerspective(false, 50, .1, 1000);
-	
 	light.enable();
 	light.setPosition(+500, +500, +500);
 }
@@ -183,15 +181,16 @@ void ofApp::draw(){
 	ofBackground(128);
 	ofSetColor(255);
 	
-	if(faceShift.getFound()) {
-		cam.begin();
-		glEnable(GL_DEPTH_TEST);
-		ofFill();
-		ofTranslate(faceShift.getPosition());
-		glMultMatrixf((GLfloat*) faceShift.getRotationMatrix().getPtr());
-		current.draw();
-		drawEye(leftEye, faceShift.getLeftEye());
-		drawEye(rightEye, faceShift.getRightEye());
-		cam.end();
-	}
+	cam.begin();
+	glEnable(GL_DEPTH_TEST);
+	ofFill();
+	ofRotateX(180);
+	ofTranslate(faceShift.getPosition());
+	ofScale(-1, 1, 1);
+	glMultMatrixf((GLfloat*) faceShift.getRotationMatrix().getPtr());
+	ofScale(-1, 1, 1);
+	current.draw();
+	drawEye(leftEye, faceShift.getLeftEye());
+	drawEye(rightEye, faceShift.getRightEye());
+	cam.end();
 }
