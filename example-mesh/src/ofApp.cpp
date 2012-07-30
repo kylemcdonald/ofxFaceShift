@@ -1,5 +1,70 @@
 #include "ofApp.h"
 
+ofVec3f getNormal(const ofVec3f& v1, const ofVec3f& v2, const ofVec3f& v3) {
+	ofVec3f a = v1 - v2;
+	ofVec3f b = v3 - v2;
+	ofVec3f normal = b.cross(a);
+	normal.normalize();
+	return normal;
+}
+
+void buildNormals(ofMesh& mesh) {
+	vector<ofVec3f>& vertices = mesh.getVertices();
+	mesh.clearNormals();
+	for(int i = 0; i < mesh.getNumVertices(); i += 3) {
+		ofVec3f normal = getNormal(mesh.getVertices()[i+0], mesh.getVertices()[i+1], mesh.getVertices()[i+2]);
+		for(int j = 0; j < 3; j++) {
+			mesh.addNormal(normal);
+		}
+	}
+}
+
+ofMesh loadObj(string filename) {
+	ofMesh m;
+	vector<ofVec3f> v;
+	vector<ofVec2f> vt;
+	ofFile f(filename);
+	while(!f.eof()) {
+		string c;
+		f >> c;
+		if(c.size()) {
+			if(c == "v") {
+				float x, y, z;
+				f >> x >> y >> z;
+				v.push_back(ofVec3f(x, y, z));
+			} else if(c == "vt") {
+				float u, v;
+				f >> u >> v;
+				vt.push_back(ofVec2f(u, v));
+			} else if(c == "f") {
+				string l;
+				getline(f, l);
+				replace(l.begin(), l.end(), '/', ' ');
+				istringstream ls(l);
+				int vi1, vti1, vi2, vti2, vi3, vti3;
+				ls >> vi1 >> vti1 >> vi2 >> vti2 >> vi3 >> vti3;
+				m.addVertex(v[vi1-1]);
+				m.addVertex(v[vi2-1]);
+				m.addVertex(v[vi3-1]);
+				m.addTexCoord(vt[vti1-1]);
+				m.addTexCoord(vt[vti2-1]);
+				m.addTexCoord(vt[vti3-1]);
+				if(ls.peek() == ' ') {
+					int vi4, vti4;
+					ls >> vi4 >> vti4;
+					m.addVertex(v[vi1-1]); 
+					m.addVertex(v[vi3-1]);
+					m.addVertex(v[vi4-1]);
+					m.addTexCoord(vt[vti1-1]);
+					m.addTexCoord(vt[vti2-1]);
+					m.addTexCoord(vt[vti3-1]);
+				}
+			}
+		}
+	}
+	return m;
+}
+
 void ofApp::setup() {
 	ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL_BILLBOARD);
 	ofSetVerticalSync(true);
@@ -15,9 +80,8 @@ void ofApp::setup() {
 	dir.allowExt("obj");
 	dir.listDir();
 	for(int i = 0; i < dir.size(); i++) {
-		ofxAssimpModelLoader loader;
-		loader.loadModel(dir.getPath(i));
-		ofMesh mesh = loader.getMesh(0);
+		cout << "loading " << dir.getPath(i) << endl;
+		ofMesh mesh = loadObj(dir.getPath(i));
 		if(dir.getName(i) == "Neutral.obj") {
 			neutral = mesh;
 		} else {
@@ -25,42 +89,45 @@ void ofApp::setup() {
 		}
 	}
 	
+	for(int i = 0; i < blendshapes.size(); i++) {
+		valid.push_back(vector<unsigned int>());
+		for(int j = 0; j < blendshapes[i].getNumVertices(); j++) {
+			blendshapes[i].getVertices()[j] -= neutral.getVertices()[j];
+			if(blendshapes[i].getVertices()[j] != ofVec3f()) {
+				valid[i].push_back(j);
+			}
+		}
+	}
+	
 	light.enable();
-	light.setPosition(+500, 0, 0);
+	light.setPosition(+500, +500, +500);
 }
 
 void ofApp::update() {
 	faceShift.update();
 	
 	current = neutral;
-	// zero all vertices
-	for(int i = 0; i < current.getNumVertices(); i++) {
-		//current.getVertices()[i].set(0);
-	}
 	// do a weighted sum of all offsets from neutral
 	// (could precompute the offsets in the setup)
-	float weightSum = 1;
+	float t = 3. * ofGetElapsedTimef();
 	for(int i = 0; i < blendshapes.size(); i++) {
+		float separation = PI;
+		gui.set(i, ofClamp(ofSignedNoise(t + separation * i), 0, 1));
+		
 		float weight = gui.get(i);
-		weightSum += weight;
 		if(weight > 0) {
-			for(int j = 0; j < current.getNumVertices(); j++) {
-				//ofVec3f offset = blendshapes[i].getVertices()[j] - neutral.getVertices()[j];
-				//current.getVertices()[j] += weight * offset;
-				current.getVertices()[j] += weight * blendshapes[i].getVertices()[j];
+			for(int j = 0; j < valid[i].size(); j++) {
+				int k = valid[i][j];
+				current.getVertices()[k] += weight *  blendshapes[i].getVertices()[k];
 			}
 		}
 	}
-	// go back through and add the neutral vertices and normalize the weights
-	for(int i = 0; i < current.getNumVertices(); i++) {
-		current.getVertices()[i] /= weightSum;
-		//current.getVertices()[i] += neutral.getVertices()[i];
-	}
+	buildNormals(current);
 }
 
 void ofApp::draw(){
-	ofBackground(0);
-	ofColor(255);
+	ofBackground(128);
+	ofSetColor(255);
 	ofNoFill();
 	int n = faceShift.getBlendshapeCount(); 
 	for(int i = 0; i < n; i++) {
@@ -74,15 +141,6 @@ void ofApp::draw(){
 	cam.begin();
 	glEnable(GL_DEPTH_TEST);
 	ofRotateX(180);
-	ofMesh* curMesh;
-	if(ofGetMousePressed()) {
-		curMesh = &current;
-	} else {
-		curMesh = &blendshapes[(int) ofMap(mouseX, 0, ofGetWidth(), 0, blendshapes.size() - 1, true)];
-	}
-	curMesh->draw();
-	for(int i = 0; i < curMesh->getNumVertices(); i += 100) {
-		ofDrawBitmapString(ofToString(i), curMesh->getVertices()[i]);
-	}
+	current.draw();
 	cam.end();
 }

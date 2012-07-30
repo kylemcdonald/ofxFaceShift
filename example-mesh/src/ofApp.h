@@ -3,7 +3,6 @@
 #include "ofMain.h"
 #include "ofxMiniGui.h"
 #include "ofxFaceShift.h"
-#include "ofxAssimpModelLoader.h"
 
 using namespace ofxMiniGui;
 
@@ -22,5 +21,6 @@ public:
 	
 	ofMesh neutral, current;
 	vector<ofMesh> blendshapes;
+	vector<vector<unsigned int> > valid;
 };
 
