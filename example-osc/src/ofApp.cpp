@@ -61,11 +61,8 @@ void ofApp::sendBundle() {
 }
 
 void ofApp::setup() {
-	ofSetVerticalSync(true);
-	ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL_BILLBOARD);
-	
-	loadSettings();
-	
+	ofSetVerticalSync(true);	
+	loadSettings();	
 	faceShift.setup(faceShiftPort);
 	osc.setup(oscHost, oscPort);
 }
