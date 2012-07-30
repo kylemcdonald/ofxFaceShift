@@ -1,10 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxMiniGui.h"
 #include "ofxFaceShift.h"
-
-using namespace ofxMiniGui;
 
 class ofApp : public ofBaseApp{
 public:
@@ -16,8 +13,6 @@ public:
 	
 	ofEasyCam cam;
 	ofLight light;
-	
-	Gui gui;
 	
 	ofMesh neutral, current;
 	vector<ofMesh> blendshapes;

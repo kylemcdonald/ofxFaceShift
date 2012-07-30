@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		276D355815C5D870009BA635 /* Drawable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 276D354515C5D870009BA635 /* Drawable.cpp */; };
-		276D355915C5D870009BA635 /* Gui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 276D354715C5D870009BA635 /* Gui.cpp */; };
-		276D355A15C5D870009BA635 /* Slider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 276D354A15C5D870009BA635 /* Slider.cpp */; };
 		2780DD5315C2291F00A46164 /* ofxTCPClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2780DD4015C2291F00A46164 /* ofxTCPClient.cpp */; };
 		2780DD5415C2291F00A46164 /* ofxTCPManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2780DD4215C2291F00A46164 /* ofxTCPManager.cpp */; };
 		2780DD5515C2291F00A46164 /* ofxTCPServer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2780DD4415C2291F00A46164 /* ofxTCPServer.cpp */; };
@@ -65,13 +62,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		276D354515C5D870009BA635 /* Drawable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Drawable.cpp; path = ../../ofxMiniGui/src/Drawable.cpp; sourceTree = SOURCE_ROOT; };
-		276D354615C5D870009BA635 /* Drawable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Drawable.h; path = ../../ofxMiniGui/src/Drawable.h; sourceTree = SOURCE_ROOT; };
-		276D354715C5D870009BA635 /* Gui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Gui.cpp; path = ../../ofxMiniGui/src/Gui.cpp; sourceTree = SOURCE_ROOT; };
-		276D354815C5D870009BA635 /* Gui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Gui.h; path = ../../ofxMiniGui/src/Gui.h; sourceTree = SOURCE_ROOT; };
-		276D354915C5D870009BA635 /* ofxMiniGui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxMiniGui.h; path = ../../ofxMiniGui/src/ofxMiniGui.h; sourceTree = SOURCE_ROOT; };
-		276D354A15C5D870009BA635 /* Slider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Slider.cpp; path = ../../ofxMiniGui/src/Slider.cpp; sourceTree = SOURCE_ROOT; };
-		276D354B15C5D870009BA635 /* Slider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Slider.h; path = ../../ofxMiniGui/src/Slider.h; sourceTree = SOURCE_ROOT; };
 		2780DD3E15C2291F00A46164 /* ofxNetwork.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxNetwork.h; path = ../../../addons/ofxNetwork/src/ofxNetwork.h; sourceTree = SOURCE_ROOT; };
 		2780DD3F15C2291F00A46164 /* ofxNetworkUtils.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxNetworkUtils.h; path = ../../../addons/ofxNetwork/src/ofxNetworkUtils.h; sourceTree = SOURCE_ROOT; };
 		2780DD4015C2291F00A46164 /* ofxTCPClient.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxTCPClient.cpp; path = ../../../addons/ofxNetwork/src/ofxTCPClient.cpp; sourceTree = SOURCE_ROOT; };
@@ -133,30 +123,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		276D34D415C5D86F009BA635 /* ofxMiniGui */ = {
-			isa = PBXGroup;
-			children = (
-				276D354415C5D870009BA635 /* src */,
-			);
-			name = ofxMiniGui;
-			path = ../../ofxMiniGui;
-			sourceTree = SOURCE_ROOT;
-		};
-		276D354415C5D870009BA635 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				276D354515C5D870009BA635 /* Drawable.cpp */,
-				276D354615C5D870009BA635 /* Drawable.h */,
-				276D354715C5D870009BA635 /* Gui.cpp */,
-				276D354815C5D870009BA635 /* Gui.h */,
-				276D354915C5D870009BA635 /* ofxMiniGui.h */,
-				276D354A15C5D870009BA635 /* Slider.cpp */,
-				276D354B15C5D870009BA635 /* Slider.h */,
-			);
-			name = src;
-			path = ../../ofxMiniGui/src;
-			sourceTree = SOURCE_ROOT;
-		};
 		2780DD4815C2291F00A46164 /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -219,7 +185,6 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
-				276D34D415C5D86F009BA635 /* ofxMiniGui */,
 				27E629DB15C2E71700170E4D /* ofxFaceShift */,
 				2780DD4915C2291F00A46164 /* ofxNetwork */,
 				2780DD4C15C2291F00A46164 /* ofxThread */,
@@ -393,9 +358,6 @@
 				2780DD5515C2291F00A46164 /* ofxTCPServer.cpp in Sources */,
 				2780DD5615C2291F00A46164 /* ofxUDPManager.cpp in Sources */,
 				27E629E315C2E72200170E4D /* ofxFaceShift.cpp in Sources */,
-				276D355815C5D870009BA635 /* Drawable.cpp in Sources */,
-				276D355915C5D870009BA635 /* Gui.cpp in Sources */,
-				276D355A15C5D870009BA635 /* Slider.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

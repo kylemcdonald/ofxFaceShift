@@ -5,6 +5,8 @@
 
 class ofxFaceShift {
 public:
+	ofxFaceShift();
+
 	void setup(unsigned int port = 33433);
 	bool update();
 	

@@ -24,6 +24,10 @@ void readRaw(stringstream& stream, T& data) {
 	stream.read((char*) &data, sizeof(T));
 }
 
+ofxFaceShift::ofxFaceShift()
+	:found(false) {
+}
+
 void ofxFaceShift::setup(unsigned int port) {	
 	udpConnection.Create();
 	udpConnection.Bind(port);
