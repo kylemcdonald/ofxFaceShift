@@ -65,11 +65,22 @@ ofMesh loadObj(string filename) {
 	return m;
 }
 
-const float eyeRadius = 14;
 void loadEye(string filename, ofVec3f& leftEye, ofVec3f& rightEye) {
 	ofFile f(filename);
 	f >> leftEye.x >> leftEye.y >> leftEye.z;
 	f >> rightEye.x >> rightEye.y >> rightEye.z;
+}
+
+const float eyeRadius = 14, corneaScale = .6;
+void drawEye(ofVec3f position, ofVec2f orientation = ofVec2f()) {
+	ofPushMatrix();
+	ofTranslate(position);
+	ofRotateY(orientation.x);
+	ofRotateX(orientation.y);
+	ofSphere(eyeRadius);
+	ofTranslate(0, 0, -eyeRadius * (1.1 - corneaScale));
+	ofSphere(eyeRadius * corneaScale);
+	ofPopMatrix();
 }
 
 void ofApp::setup() {
@@ -151,7 +162,7 @@ void ofApp::draw(){
 	ofRotateX(180);
 	ofFill();
 	current.draw();
-	ofSphere(leftEye, eyeRadius);
-	ofSphere(rightEye, eyeRadius);
+	drawEye(leftEye);
+	drawEye(rightEye);
 	cam.end();
 }
