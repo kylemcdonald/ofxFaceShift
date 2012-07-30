@@ -65,10 +65,19 @@ ofMesh loadObj(string filename) {
 	return m;
 }
 
+const float eyeRadius = 14;
+void loadEye(string filename, ofVec3f& leftEye, ofVec3f& rightEye) {
+	ofFile f(filename);
+	f >> leftEye.x >> leftEye.y >> leftEye.z;
+	f >> rightEye.x >> rightEye.y >> rightEye.z;
+}
+
 void ofApp::setup() {
 	ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL_BILLBOARD);
 	ofSetVerticalSync(true);
 	faceShift.setup();
+	
+	loadEye("export/eye", leftEye, rightEye);
 	
 	gui.setup();
 	const vector<string>& names = faceShift.getBlendshapeNames();
@@ -108,7 +117,6 @@ void ofApp::update() {
 	
 	current = neutral;
 	// do a weighted sum of all offsets from neutral
-	// (could precompute the offsets in the setup)
 	float t = 3. * ofGetElapsedTimef();
 	for(int i = 0; i < blendshapes.size(); i++) {
 		float separation = PI;
@@ -141,6 +149,9 @@ void ofApp::draw(){
 	cam.begin();
 	glEnable(GL_DEPTH_TEST);
 	ofRotateX(180);
+	ofFill();
 	current.draw();
+	ofSphere(leftEye, eyeRadius);
+	ofSphere(rightEye, eyeRadius);
 	cam.end();
 }
