@@ -71,7 +71,7 @@ void loadEye(string filename, ofVec3f& leftEye, ofVec3f& rightEye) {
 	f >> rightEye.x >> rightEye.y >> rightEye.z;
 }
 
-const float eyeRadius = 14, corneaScale = .6;
+const float eyeRadius = 14, corneaScale = .5;
 void drawEye(ofVec3f position, ofVec2f orientation = ofVec2f()) {
 	ofPushMatrix();
 	ofTranslate(position);
@@ -124,38 +124,30 @@ void ofApp::setup() {
 }
 
 void ofApp::update() {
-	faceShift.update();
-	
-	current = neutral;
-	// do a weighted sum of all offsets from neutral
-	float t = 3. * ofGetElapsedTimef();
-	for(int i = 0; i < blendshapes.size(); i++) {
-		float separation = PI;
-		gui.set(i, ofClamp(ofSignedNoise(t + separation * i), 0, 1));
+	if(faceShift.update()) {
+		int n = faceShift.getBlendshapeCount(); 
+		for(int i = 0; i < n; i++) {
+			float weight = faceShift.getBlendshapeWeight(i);
+			gui.set(i, weight);
+		}	
 		
-		float weight = gui.get(i);
-		if(weight > 0) {
-			for(int j = 0; j < valid[i].size(); j++) {
-				int k = valid[i][j];
-				current.getVertices()[k] += weight *  blendshapes[i].getVertices()[k];
+		current = neutral;
+		for(int i = 0; i < blendshapes.size(); i++) {		
+			float weight = gui.get(i);
+			if(weight > 0) {
+				for(int j = 0; j < valid[i].size(); j++) {
+					int k = valid[i][j];
+					current.getVertices()[k] += weight *  blendshapes[i].getVertices()[k];
+				}
 			}
 		}
+		buildNormals(current);
 	}
-	buildNormals(current);
 }
 
 void ofApp::draw(){
 	ofBackground(128);
 	ofSetColor(255);
-	ofNoFill();
-	int n = faceShift.getBlendshapeCount(); 
-	for(int i = 0; i < n; i++) {
-		float weight = faceShift.getBlendshapeWeight(i);
-		string name = faceShift.getBlendshapeName(i);
-		ofRect(0, 0, weight * 100, 10);
-		ofDrawBitmapString(name, weight * 100, 10);
-		ofTranslate(0, 10);
-	}
 	
 	cam.begin();
 	glEnable(GL_DEPTH_TEST);
