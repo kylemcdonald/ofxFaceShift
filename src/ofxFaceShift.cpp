@@ -238,10 +238,10 @@ bool ofxFaceShift::update() {
 					}
 					break;
 				case FS_EYES_BLOCK:
-					readRaw(data, leftEyeRotation.x);
 					readRaw(data, leftEyeRotation.y);
-					readRaw(data, rightEyeRotation.x);
+					readRaw(data, leftEyeRotation.x);
 					readRaw(data, rightEyeRotation.y);
+					readRaw(data, rightEyeRotation.x);
 					break;
 				case FS_MARKERS_BLOCK:
 					markers.clear();
