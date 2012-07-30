@@ -4,7 +4,7 @@
 void ofApp::loadSettings() {
 	ofxXmlSettings xml;
 	xml.loadFile("settings.xml");
-
+	
 	xml.pushTag("osc");
 	oscHost = xml.getValue("host", "localhost");
 	oscPort = xml.getValue("port", 8338);
@@ -14,13 +14,7 @@ void ofApp::loadSettings() {
 	faceShiftPort = xml.getValue("port", 33433);
 	xml.popTag();
 	
-	ofFile file("addresses.txt");
-	while(!file.eof()) {
-		string cur;
-		getline(file, cur);
-		addresses.push_back(cur);
-	}
-	cout << ofToString(addresses) << "/" << addresses.size() << endl;
+	addresses = ofSplitString(ofBufferFromFile("addresses.txt"), "\n");
 }
 
 void ofApp::clearBundle() {
@@ -77,26 +71,35 @@ void ofApp::setup() {
 }
 
 void ofApp::update() {
-	faceShift.update();
+	clearBundle();
+	if(faceShift.update()) {
+		lastPacket = ofGetElapsedTimef();
+		timer.tick();
+		if(faceShift.getFound()) {
+			for(int i = 0; i < addresses.size(); i++) {
+				addMessage("/gesture" + addresses[i], faceShift.getBlendshapeWeight(i));
+			}
+			addMessage("/gesture/eye/gaze/left", faceShift.getLeftEyeRotation());
+			addMessage("/gesture/eye/gaze/right", faceShift.getRightEyeRotation());
+			addMessage("/pose/position", faceShift.getPosition());
+			addMessage("/pose/orientation", faceShift.getRotationEuler());
+			addMessage("/timestamp", (float) faceShift.getTimestamp());
+			addMessage("/found", 1);
+		} else {
+			addMessage("/found", 0);
+		}
+	}
+	sendBundle();
 }
 
 void ofApp::draw(){
-	ofBackground(0);
-	ofColor(255);
-	ofFill();
-	int n = faceShift.getBlendshapeCount(); 
-	ofPushMatrix();
-	for(int i = 0; i < n; i++) {
-		float weight = faceShift.getBlendshapeWeight(i);
-		string name = faceShift.getBlendshapeName(i);
-		ofRect(0, 0, weight * 100, 10);
-		ofDrawBitmapString(name, weight * 100, 10);
-		ofTranslate(0, 10);
+	float status = ofMap(ofGetElapsedTimef() - lastPacket, 0, 3, 0, 1, true);	
+	ofColor magentaPrint = ofColor::fromHex(0xec008c);
+	ofBackground((ofColor::gray).getLerped(magentaPrint, status));
+	ofSetColor(255);
+	ofDrawBitmapString("Listening on " + ofToString(faceShiftPort) + " at " + ofToString(timer.getFramerate(), 0) + " packets/second", 10, 20);
+	ofDrawBitmapString("Sending to " + oscHost + ":" + ofToString(oscPort), 10, 40);
+	if(status == 1) {
+		ofDrawBitmapString("Not receiving any packets.", 10, 60);
 	}
-	ofPopMatrix();
-	
-	ofVec2f leftEye = faceShift.getLeftEyeRotation();
-	ofVec2f rightEye = faceShift.getRightEyeRotation();
-	ofVec3f pos = faceShift.getPosition();
-	ofVec3f rot = faceShift.getRotationEuler();
 }

@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxFaceShift.h"
 #include "ofxOsc.h"
+#include "RateTimer.h"
 
 class ofApp : public ofBaseApp{
 public:
@@ -17,6 +18,8 @@ public:
 	void addMessage(string address, T data);
 	void sendBundle();
 	
+	RateTimer timer;
+	float lastPacket;
 	unsigned int faceShiftPort;
 	ofxFaceShift faceShift;
 	ofEasyCam cam;
