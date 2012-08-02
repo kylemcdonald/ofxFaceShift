@@ -61,17 +61,18 @@ void ofApp::sendBundle() {
 }
 
 void ofApp::setup() {
-	ofSetVerticalSync(true);	
+	ofSetVerticalSync(true);
+	ofSetFrameRate(120); // background apps aren't vsynced
 	loadSettings();	
 	faceShift.setup(faceShiftPort);
 	osc.setup(oscHost, oscPort);
 }
 
 void ofApp::update() {
-	clearBundle();
 	if(faceShift.update()) {
 		lastPacket = ofGetElapsedTimef();
 		timer.tick();
+		clearBundle();
 		if(faceShift.getFound()) {
 			for(int i = 0; i < addresses.size(); i++) {
 				addMessage("/gesture" + addresses[i], faceShift.getBlendshapeWeight(i));
@@ -85,8 +86,8 @@ void ofApp::update() {
 		} else {
 			addMessage("/found", 0);
 		}
+		sendBundle();
 	}
-	sendBundle();
 }
 
 void ofApp::draw(){
