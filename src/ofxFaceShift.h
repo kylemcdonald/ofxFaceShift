@@ -13,6 +13,7 @@ public:
 	
 	unsigned int getBlendshapeCount() const;
 	float getBlendshapeWeight(unsigned int i) const;
+	float getBlendshapeWeight(const string& blendshapeName) const;
 	const vector<float>& getBlendshapeWeights() const;
 	string getBlendshapeName(unsigned int i) const;
 	const vector<string>& getBlendshapeNames() const;

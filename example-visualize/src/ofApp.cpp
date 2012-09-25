@@ -25,6 +25,9 @@ void ofApp::draw(){
 	}
 	ofPopMatrix();
 	
+	// to get blendshapes by name instead of number, try:
+	// float BrowsD_L = faceShift.getBlendshapeWeight("BrowsD_L");
+	
 	float eyeArea = 150, eyeZoom = -4;
 	ofNoFill();
 	ofTranslate(0, ofGetHeight() - eyeArea);
@@ -50,6 +53,7 @@ void ofApp::draw(){
 	cam.begin();
 	ofRotateX(180);
 	ofVec3f pos = faceShift.getPosition();
+	pos.z *= -1;
 	ofVec3f rot = faceShift.getRotationEuler();
 	string posStr = ofToString(pos.x, 0) + "/" + ofToString(pos.y, 0) + "/" + ofToString(pos.z, 0);
 	string rotStr = ofToString(rot.x, 0) + "/" + ofToString(rot.y, 0) + "/" + ofToString(rot.z, 0);

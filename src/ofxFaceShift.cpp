@@ -269,6 +269,15 @@ float ofxFaceShift::getBlendshapeWeight(unsigned int i) const {
 	return blendshapeWeights.at(i);
 }
 
+float ofxFaceShift::getBlendshapeWeight(const string& blendshapeName) const {
+	for(int i = 0; i < blendshapeNames.size() && i < blendshapeWeights.size(); i++) {
+		if(blendshapeNames[i] == blendshapeName) {
+			return blendshapeWeights[i];
+		}
+	}
+	return 0;
+}
+
 const vector<float>& ofxFaceShift::getBlendshapeWeights() const {
 	return blendshapeWeights;
 }
